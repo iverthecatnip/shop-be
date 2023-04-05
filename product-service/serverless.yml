@@ -1,0 +1,70 @@
+service: product-service
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-webpack
+  - serverless-plugin-swagger-ui
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-west-1
+
+custom:
+  swaggerUi:
+    s3Bucket: serverless-swagger-ui
+    exportType: swagger
+    accepts: application/json
+    swaggerUiConfig:
+      dom_id: '#swagger-ui'
+      deepLinking: true
+      presets:
+        - SwaggerUIBundle.presets.apis
+        - SwaggerUIStandalonePreset
+      plugins:
+        - SwaggerUIBundle.plugins.DownloadUrl
+      layout:
+        - StandaloneLayout
+      supportedSubmitMethods: ["get"]
+
+
+functions:
+  getProducts:
+    handler: handler.getProducts
+    events:
+      - http:
+          method: get
+          path: /products
+          cors: true
+  getProductById:
+    handler: handler.getProductById
+    events:
+      - http:
+          method: get
+          path: /products/{id}
+          cors: true
+
+resources:
+  Resources:
+    S3BucketApiDocs:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.swaggerUi.s3Bucket}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+    S3BucketPolicyApiDocs:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: S3BucketApiDocs
+        PolicyDocument:
+          Statement:
+            - Action:
+                - s3:GetObject
+              Effect: Allow
+              Resource:
+                Fn::Sub: arn:aws:s3:::${S3BucketApiDocs}/*
+              Principal: '*'
