@@ -11,7 +11,8 @@ const connect = async () => {
   try {
     await client.connect()
   } catch (e) {
-    console.log(e)
+    console.error('DB connection error')
+    console.error(e)
   }
   return client;
 }
@@ -24,7 +25,8 @@ export const getDataFromDB = async (query, values = []) => {
     const { rows }  = await client.query(query, values)
     response = rows;
   } catch (e) {
-    console.log('')
+    console.error('DB Error')
+    console.error(e)
     error = true;
   }
   client.end();
@@ -57,7 +59,8 @@ export const addProductToDB = async (data) => {
     await client.query(insertCount, insertCountValues)
     await client.query('COMMIT')
   } catch (e) {
-    console.log('Transaction Error ' + e)
+    console.error('DB Transaction Error')
+    console.error(e)
     await client.query('ROLLBACK')
     error = e.toString();
   }
