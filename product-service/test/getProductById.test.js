@@ -1,5 +1,5 @@
-import {getProductById} from "./getProductById";
-import {mockProducts} from "./mock";
+import {getProductById} from "../handlers/getProductById";
+import {mockProducts} from "../handlers/mock";
 
 test('should return one product by id', async () => {
   const mockId = '1';

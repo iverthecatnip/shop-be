@@ -1,0 +1,31 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Post Product Json",
+  "required": ["title"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title",
+      "default": "",
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "default": "",
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "price": {
+      "type": "number",
+      "title": "Price",
+      "default": 0
+    },
+    "count": {
+      "type": "number",
+      "title": "Count",
+      "default": 0
+    }
+  }
+}

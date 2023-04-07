@@ -1,16 +1,10 @@
-import {mockProducts} from "./mock";
+import { getAllProductsFromDB } from "../services/database";
+import { generateResponse } from "../services/responses";
 
-export const getProducts = async () => {
-    return {
-        statusCode: 200,
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true,
-        },
-        body: JSON.stringify(
-            mockProducts,
-            null,
-            2
-        ),
-    };
+
+export const getProducts = async (event) => {
+    console.log('GET /products : event')
+    console.log(event)
+    const res = await getAllProductsFromDB();
+    return generateResponse(res);
 };

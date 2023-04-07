@@ -1,36 +1,11 @@
-import {mockProducts} from "./mock";
+import { getProductByIdFromDB } from "../services/database";
+import { generateResponse } from "../services/responses";
 
 export const getProductById = async (event) => {
   const { pathParameters: { id } } = event
+  console.log(`GET /products/${id} : event`)
+  console.log(event)
+  const res = await getProductByIdFromDB(id);
 
-  const filtered = mockProducts.filter(item => item.id === id);
-
-  if (filtered.length > 0) {
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true,
-      },
-      body: JSON.stringify(
-          filtered[0],
-          null,
-          2
-      ),
-    };
-  }else{
-    return {
-      statusCode: 404,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true,
-      },
-      body: JSON.stringify(
-          {error: 'Product not found'},
-          null,
-          2
-      ),
-    };
-  }
-
+  return generateResponse(res, false);
 };
