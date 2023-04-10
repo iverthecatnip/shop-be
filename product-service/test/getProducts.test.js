@@ -1,4 +1,4 @@
-import {mockProducts} from "../handlers/mock";
+import {mockProducts} from "./mock";
 import {getProducts} from "../handlers/getProducts";
 
 test('should return an array of objects', async () => {
