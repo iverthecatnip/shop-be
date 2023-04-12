@@ -7,7 +7,7 @@ export const importProductsFile  = async (event) => {
   const s3 = new AWS.S3({region: 'eu-west-1'})
   console.log(s3)
   const params = {
-    Bucket: 'bucket-for-import-files',
+    Bucket: process.env.BUCKET,
     Key: `uploaded/${name}`,
     Expires: 60,
     ContentType: 'text/csv'
