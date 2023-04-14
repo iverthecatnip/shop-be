@@ -19,5 +19,8 @@
     "webpack": "^4.35.2"
   },
   "author": "AT",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.10.0"
+  }
 }

@@ -1,4 +1,4 @@
-import {getProductById} from "./getProductById";
+import {getProductById} from "../handlers/getProductById";
 import {mockProducts} from "./mock";
 
 test('should return one product by id', async () => {

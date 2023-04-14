@@ -13,6 +13,12 @@ provider:
   region: eu-west-1
 
 custom:
+  dbCredentials:
+    user: ${file(./db.yml):user}
+    password: ${file(./db.yml):password}
+    host: ${file(./db.yml):host}
+    database: ${file(./db.yml):database}
+    port: ${file(./db.yml):port}
   swaggerUi:
     s3Bucket: serverless-swagger-ui
     exportType: swagger
@@ -38,6 +44,13 @@ functions:
           method: get
           path: /products
           cors: true
+    environment:
+      DB_USERNAME:  ${self:custom.dbCredentials.user}
+      DB_PASSWORD:  ${self:custom.dbCredentials.password}
+      DB_NAME:  ${self:custom.dbCredentials.database}
+      DB_HOST:  ${self:custom.dbCredentials.host}
+      DB_PORT:  ${self:custom.dbCredentials.port}
+
   getProductById:
     handler: handler.getProductById
     events:
@@ -45,6 +58,33 @@ functions:
           method: get
           path: /products/{id}
           cors: true
+    environment:
+      DB_USERNAME: ${self:custom.dbCredentials.user}
+      DB_PASSWORD: ${self:custom.dbCredentials.password}
+      DB_NAME: ${self:custom.dbCredentials.database}
+      DB_HOST: ${self:custom.dbCredentials.host}
+      DB_PORT: ${self:custom.dbCredentials.port}
+
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - http:
+          method: post
+          path: /products
+          cors: true
+          request:
+            schemas:
+              application/json:
+                schema: ${file(./schemas/create-product.json)}
+                name: RequestBody
+                description: 'Validation model for Creating Products'
+
+    environment:
+      DB_USERNAME: ${self:custom.dbCredentials.user}
+      DB_PASSWORD: ${self:custom.dbCredentials.password}
+      DB_NAME: ${self:custom.dbCredentials.database}
+      DB_HOST: ${self:custom.dbCredentials.host}
+      DB_PORT: ${self:custom.dbCredentials.port}
 
 resources:
   Resources:
