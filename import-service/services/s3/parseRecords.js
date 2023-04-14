@@ -2,7 +2,7 @@ import csv from "csv-parser";
 import AWS from "aws-sdk";
 const BUCKET = process.env.BUCKET;
 
-export const parseRecord = (key) => {
+export const parseRecords = (key) => {
   const s3 = new AWS.S3({region: 'eu-west-1'})
 
   console.log(`Parse file: ${key}`);
