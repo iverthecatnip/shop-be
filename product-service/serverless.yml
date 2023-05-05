@@ -11,6 +11,19 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: eu-west-1
+  environment:
+    DB_USERNAME: ${self:custom.dbCredentials.user}
+    DB_PASSWORD: ${self:custom.dbCredentials.password}
+    DB_NAME: ${self:custom.dbCredentials.database}
+    DB_HOST: ${self:custom.dbCredentials.host}
+    DB_PORT: ${self:custom.dbCredentials.port}
+    SNS_ARN:
+      Ref: SNSTopic
+  iamRoleStatements:
+    - Effect: Allow
+      Action: sns:*
+      Resource:
+        Ref: SNSTopic
 
 custom:
   dbCredentials:
@@ -44,12 +57,6 @@ functions:
           method: get
           path: /products
           cors: true
-    environment:
-      DB_USERNAME:  ${self:custom.dbCredentials.user}
-      DB_PASSWORD:  ${self:custom.dbCredentials.password}
-      DB_NAME:  ${self:custom.dbCredentials.database}
-      DB_HOST:  ${self:custom.dbCredentials.host}
-      DB_PORT:  ${self:custom.dbCredentials.port}
 
   getProductById:
     handler: handler.getProductById
@@ -58,12 +65,6 @@ functions:
           method: get
           path: /products/{id}
           cors: true
-    environment:
-      DB_USERNAME: ${self:custom.dbCredentials.user}
-      DB_PASSWORD: ${self:custom.dbCredentials.password}
-      DB_NAME: ${self:custom.dbCredentials.database}
-      DB_HOST: ${self:custom.dbCredentials.host}
-      DB_PORT: ${self:custom.dbCredentials.port}
 
   createProduct:
     handler: handler.createProduct
@@ -79,12 +80,13 @@ functions:
                 name: RequestBody
                 description: 'Validation model for Creating Products'
 
-    environment:
-      DB_USERNAME: ${self:custom.dbCredentials.user}
-      DB_PASSWORD: ${self:custom.dbCredentials.password}
-      DB_NAME: ${self:custom.dbCredentials.database}
-      DB_HOST: ${self:custom.dbCredentials.host}
-      DB_PORT: ${self:custom.dbCredentials.port}
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          maximumBatchingWindow: 90
+          arn: arn:aws:sqs:eu-west-1:231405776096:import-products-from-file-queue
 
 resources:
   Resources:
@@ -108,3 +110,15 @@ resources:
               Resource:
                 Fn::Sub: arn:aws:s3:::${S3BucketApiDocs}/*
               Principal: '*'
+    SNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: products-created-topic
+    SNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: ivercox+sns@gmail.com
+        Protocol: email
+        TopicArn:
+          Ref: SNSTopic
+
