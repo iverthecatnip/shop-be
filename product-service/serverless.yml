@@ -117,8 +117,19 @@ resources:
     SNSSubscription:
       Type: AWS::SNS::Subscription
       Properties:
+        Endpoint: Anastassiya_Tolstova@epam.com
+        Protocol: email
+        TopicArn:
+          Ref: SNSTopic
+    SNSSubscriptionHighPrice:
+      Type: AWS::SNS::Subscription
+      Properties:
         Endpoint: ivercox+sns@gmail.com
         Protocol: email
         TopicArn:
           Ref: SNSTopic
+        FilterPolicyScope: MessageAttributes
+        FilterPolicy:
+          price:
+              - high
 

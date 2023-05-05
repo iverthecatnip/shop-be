@@ -1,10 +1,8 @@
 import AWS from "aws-sdk";
 import { putProductToDB } from "../services/database";
+import { generateEmail } from '../services/responses';
 export const catalogBatchProcess = async (event) => {
-  console.log('catalogBatchProcess')
   const products = event.Records.map(({body}) => JSON.parse(body));
-  console.log('products')
-  console.log(products)
 
   const resultArray = []
   for (const product of products){
@@ -12,13 +10,19 @@ export const catalogBatchProcess = async (event) => {
     resultArray.push({product, result})
   }
 
-  console.log('result')
-  console.log(resultArray)
+  const {message, price} = generateEmail(resultArray);
+
   const sns = new AWS.SNS({region: 'eu-west-1'})
   sns.publish({
     Subject: 'Products were added',
-    Message: JSON.stringify(resultArray),
-    TopicArn: process.env.SNS_ARN
+    Message: message,
+    TopicArn: process.env.SNS_ARN,
+    MessageAttributes: {
+      price: {
+        DataType: 'String',
+        StringValue: price
+      },
+    }
   }, (err, data) => {
       if (err){
         console.error('Error')
