@@ -39,6 +39,12 @@ functions:
           method: get
           path: /import
           cors: true
+          authorizer:
+            name: tokenAuthorizer
+            arn: arn:aws:lambda:eu-west-1:231405776096:function:authorization-service-dev-basicAuthorizer
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            type: token
 
   importFileParser:
     handler: handler.importFileParser
@@ -56,4 +62,13 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: import-products-from-file-queue
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
 

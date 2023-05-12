@@ -73,6 +73,12 @@ functions:
           method: post
           path: /products
           cors: true
+          authorizer:
+            name: tokenAuthorizer
+            arn: arn:aws:lambda:eu-west-1:231405776096:function:authorization-service-dev-basicAuthorizer
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            type: token
           request:
             schemas:
               application/json:
@@ -90,6 +96,15 @@ functions:
 
 resources:
   Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
     S3BucketApiDocs:
       Type: AWS::S3::Bucket
       Properties:
