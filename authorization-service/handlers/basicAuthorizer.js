@@ -3,14 +3,17 @@ export const basicAuthorizer = async (event, context, callback) => {
     console.log(event)
 
     if(event['type'] !== 'TOKEN'){
-        callback('Unauthorized request');
+        callback('Unauthorized');
+    }
 
+    const token = event.authorizationToken;
+    const encodedCreds = token.split(' ')[1];
+
+    if (encodedCreds === 'null'){
+        callback('Unauthorized');
     }
 
     try {
-        const token = event.authorizationToken;
-
-        const encodedCreds = token.split(' ')[1];
         const buff = Buffer.from(encodedCreds, 'base64');
         const [username, password] = buff.toString('utf-8').split(':');
 
@@ -23,7 +26,6 @@ export const basicAuthorizer = async (event, context, callback) => {
         callback(null, policy);
     }catch(e) {
        callback(`Unauthorized: ${e.message}`)
-
     }
 };
 
