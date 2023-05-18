@@ -22,9 +22,9 @@ export const generateResponse = ({data, error, statusCode}, multiple = true) => 
   return {
     ...response,
     body: JSON.stringify(
-      body,
-      null,
-      2
+        body,
+        null,
+        2
     )
   }
 }
