@@ -3,6 +3,7 @@ export const generateResponse = ({data, error, statusCode}, multiple = true) => 
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true,
+      'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
     },
     statusCode,
   };
