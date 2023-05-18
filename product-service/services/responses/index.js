@@ -28,3 +28,20 @@ export const generateResponse = ({data, error, statusCode}, multiple = true) => 
     )
   }
 }
+
+
+export const generateEmail = (data) => {
+  let message = 'Products:\n\n';
+  let price = 'low'
+
+  data.forEach((item, id) => {
+    const {title, description, price: productPrice, count} = item.product;
+    if(productPrice > 499) {
+      price = 'high';
+    }
+    message += `${id+1}:\nTitle: ${title}\nDescription: ${description}\nPrice: ${productPrice}\nCount: ${count}\n\n`
+  })
+
+  return {message, price}
+
+}

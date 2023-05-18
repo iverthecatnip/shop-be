@@ -14,6 +14,10 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: eu-west-1
+  environment:
+    BUCKET: ${self:custom.bucketName}
+    SQS_URL:
+      Ref: SQSQueue
   iamRoleStatements:
     - Effect: Allow
       Action: s3:ListBucket
@@ -21,6 +25,10 @@ provider:
     - Effect: Allow
       Action: s3:*
       Resource: arn:aws:s3:::${self:custom.bucketName}/*
+    - Effect: Allow
+      Action: sqs:*
+      Resource:
+        - Fn::GetAtt: [SQSQueue, Arn]
 
 
 functions:
@@ -31,17 +39,21 @@ functions:
           method: get
           path: /import
           cors: true
-    environment:
-      BUCKET: ${self:custom.bucketName}
 
   importFileParser:
     handler: handler.importFileParser
     events:
       - s3:
-          bucket: bucket-for-import-files
+          bucket: ${self:custom.bucketName}
           event: s3:ObjectCreated:*
           rules:
             - prefix: uploaded/
           existing: true
-    environment:
-      BUCKET: ${self:custom.bucketName}
+
+resources:
+  Resources:
+    SQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: import-products-from-file-queue
+

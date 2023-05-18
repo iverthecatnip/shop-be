@@ -10,6 +10,7 @@ export const parseRecords = (key) => {
     Bucket: BUCKET,
     Key: key
   }
+  const SQS = new AWS.SQS({region: 'eu-west-1'});
 
   return new Promise((resolve, reject) => {
     s3.getObject(fileParams)
@@ -18,8 +19,19 @@ export const parseRecords = (key) => {
         mapHeaders: ({ header }) => header.trim()
       }))
       .on('data',  (data) => {
-        console.log('data')
-        console.log(data)
+        SQS.sendMessage({
+          QueueUrl: process.env.SQS_URL,
+          MessageBody: JSON.stringify(
+            data,
+            null,
+            2
+          )
+        }, (err) => {
+          if(err){
+            console.error('SQS ERROR');
+            console.error(err);
+          }
+        })
       })
       .on('error',  (error) => {
         console.error('STREAM ERROR')

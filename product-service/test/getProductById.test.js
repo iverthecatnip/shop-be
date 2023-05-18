@@ -1,6 +1,15 @@
 import {getProductById} from "../handlers/getProductById";
 import {mockProducts} from "./mock";
-
+jest.mock('../services/database', () => ({
+  getProductByIdFromDB: jest.fn(id => {
+    const filtered = mockProducts.filter(item => item.id === id);
+    return {
+      data: filtered,
+      statusCode: filtered.length > 0 ? 200 : 404,
+      error: filtered.length > 0 ? null : 'Product not found'
+    }
+  })
+}))
 test('should return one product by id', async () => {
   const mockId = '1';
   const mockResult = mockProducts.filter(item => item.id === mockId)
